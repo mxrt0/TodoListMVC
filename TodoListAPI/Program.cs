@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using TodoListAPI.Data;
+
 namespace TodoListAPI
 {
     public class Program
@@ -16,6 +19,10 @@ namespace TodoListAPI
                 });
             });
 
+            builder.Services.AddDbContext<ToDoListDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString"));
+            });
 
             var app = builder.Build();
 

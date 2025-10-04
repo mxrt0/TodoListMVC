@@ -10,7 +10,17 @@
         <h1 id="main-header">To-Do List</h1>
 
             <input type="text" id="new-todo-input" placeholder="Enter a new task..." /> 
+
+            <label for="date-input">Task Due Date:</label>
+            <input type="date" id="date-input" placeholder="Enter due date..." />
+            
             <button id="add-btn">Add</button> 
+     
+            <span id="error-message" style="display: none;"></span>
+
+            <div class="task-separator"></div>
+
+          <h3 id="tasks-header" style="display: none;">Tasks</h3>
 
         <ul id="tasks">
         
