@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TodoListAPI.Data;
+using TodoListAPI.Models;
 
 namespace TodoListAPI
 {
@@ -31,7 +32,27 @@ namespace TodoListAPI
             app.UseHttpsRedirection();
 
             // Endpoints
+            app.MapPost("/tasks/add", async (ToDoItem task, ToDoListDbContext db) =>
+            {
+                db.ToDoList.Add(task);
+                await db.SaveChangesAsync();
 
+                return Results.Created($"/tasks/{task.Id}", task);
+            });
+
+            app.MapGet("/tasks", async (ToDoListDbContext db) =>
+            {
+                return Results.Json(await db.ToDoList.ToListAsync());
+            });
+
+            app.MapDelete("/tasks/{id}", async (int id, ToDoListDbContext db) =>
+            {
+                var taskToDelete = db.ToDoList.Find(id);
+                db.ToDoList.Remove(taskToDelete!);
+                await db.SaveChangesAsync();
+
+                return Results.NoContent();
+            });
             app.Run();
         }
     }

@@ -17,7 +17,7 @@ body {
     width: 35%;
     margin: 0 0 1rem 0;
     box-sizing: border-box;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 #new-todo-input, #date-input {
@@ -36,7 +36,7 @@ body {
     background: linear-gradient(to bottom, #ffffff, #f7f7f7);
     background-clip: padding-box;
     border: 1px solid #ced4da;
-    border-radius: 0.25rem;
+    border-radius: 0.5rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     box-sizing: border-box;
 }
@@ -64,7 +64,7 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.3rem;
     font-weight: 600;
     transition: background 0.3s;
 }
@@ -91,9 +91,9 @@ body {
     flex-wrap: wrap;
     border-radius: 0.5rem;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     min-width: 250px;
-    max-width: 400px;
+    max-width: 350px;
     border: 1px solid #ccc;
     box-sizing: border-box;
 }
@@ -172,24 +172,28 @@ input, button {
 
 #tasks-header {
     display: inline-block;
-    padding: 8px 12px;
+    padding: 10px 13px;
     border-radius: 8px;
     background: linear-gradient(90deg, #4facfe, #00f2fe);
     color: #1c2d48;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     letter-spacing: 0.5px;
     text-shadow: 0 1px 2px rgba(0,0,0,0.15);
-    margin: 8px 0 5px;
+    margin: 8px 0 8px;
     text-align: center;
     width: 100px;
 }
-
+#tasks-header, #main-header, label {
+    user-select: none;
+    -webkit-user-select: none;
+}
 .task-separator {
     width: 60%;
     height: 3px;
     border-radius: 2px;
-    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    background: linear-gradient(90deg, #82cfff, #b0e5ff);
+    opacity: 0.7;
     margin: 20px 0;
 }
 
