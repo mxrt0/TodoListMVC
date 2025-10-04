@@ -42,17 +42,15 @@ body {
 }
 
     #new-todo-input:focus, #date-input:focus {
-        border-color: #80bdff;
         border-color: #4facfe;
         outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
         box-shadow: 0 0 6px rgba(79,172,254,0.4);
     }
 
 #date-input {
     padding: 0.5rem 0.75rem;
     margin-top: 1px;
-    width: 10%;
+    width: 12%;
 }
 
 #add-btn {
@@ -108,12 +106,47 @@ body {
     background: linear-gradient(145deg, #339dff, #007bff);
 }
 
+.edit-input {
+    font-size: 1rem;
+    text-align: center;
+    background-color: #fff;
+    background: linear-gradient(to bottom, #ffffff, #f7f7f7);
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.5rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.edit-input:focus {
+    border-color: #4facfe;
+    outline: 0;
+    box-shadow: 0 0 6px rgba(79,172,254,0.4);
+}
+
 .delete-btn {
     background: linear-gradient(145deg, #dc3545, #e4606d);
 }
 
 .delete-btn:hover {
     background: linear-gradient(145deg, #e4606d, #dc3545);
+}
+
+.save-btn {
+    background: linear-gradient(145deg, #28a745, #20c15c);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.3rem;
+    font-weight: 600;
+    transition: background 0.3s
+}
+
+.save-btn:hover {
+    background: linear-gradient(145deg, #20c15c, #28a745);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
 }
 
 .task-buttons {
@@ -154,10 +187,16 @@ body {
     transform: translateY(-1px);
 }
 
-#error-message {
+#error-message, .error-span {
     color: crimson;
     font: bold;
+}
 
+.error-span {
+    margin-top: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
 }
 
 label[for="date-input"] {

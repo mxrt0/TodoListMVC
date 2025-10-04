@@ -39,7 +39,7 @@ addBtn.addEventListener('click', () => {
         else {
             error.style.display = 'block';
             dueDateInput.focus();
-            error.textContent = "Due date cannot be empty!";
+            error.textContent = "Due date cannot be empty or NaN!";
         }
             
     }
@@ -51,19 +51,6 @@ addBtn.addEventListener('click', () => {
 
     }
 });
-
-const observer = new MutationObserver(() => {
-
-    if (tasksList.querySelector('li')) {
-        tasksHeader.style.display = 'inline-block';
-    }
-    else {
-        tasksHeader.style.display = 'none';
-    }
-
-});
-
-observer.observe(tasksList, { childList: true });
 
 async function addTask(taskTitle, taskDueDate) {
     try {
@@ -91,14 +78,13 @@ async function addTask(taskTitle, taskDueDate) {
     }
 }
 
-
 async function renderTasks() {
     try {
         const response = await fetch(`${apiBaseAddress}/tasks`);
         if (!response.ok) throw new Error("Response was not OK!");
         const data = await response.json();
 
-        allTasks = data;
+        allTasks = data.filter(item => !item.isDeleted);
         tasksList.innerHTML = "";
 
         if (allTasks.length > 0) {
@@ -114,19 +100,121 @@ async function renderTasks() {
                 const buttonsDiv = document.createElement("div");
                 buttonsDiv.className = "task-buttons";
 
+                const editInput = document.createElement('input');
+                editInput.style.display = 'none';
+                editInput.placeholder = 'Enter new task name...';
+                editInput.className = 'edit-input';
+
+                const editDateInput = document.createElement('input');
+                editDateInput.style.display = 'none';
+                editDateInput.type = 'date';
+                editDateInput.className = 'edit-input';
+
+                const inputsDiv = document.createElement('div');
+                inputsDiv.style.display = 'flex';
+
+                inputsDiv.style.flexDirection = 'column';
+                inputsDiv.style.gap = '5px';
+                inputsDiv.style.marginBottom = '5px';
+
+                inputsDiv.appendChild(editInput);
+                inputsDiv.appendChild(editDateInput);
+
+                const editErrorSpan = document.createElement("span");
+                editErrorSpan.style.display = 'none';
+                editErrorSpan.className = 'error-span';
+
+
                 const editBtn = document.createElement("button");
-                editBtn.classList.add("edit-btn");
+                editBtn.classList = "edit-btn";
                 editBtn.textContent = "Edit";
+                
 
                 const delBtn = document.createElement("button");
                 delBtn.classList.add("delete-btn");
                 delBtn.textContent = "Delete";
-                delBtn.addEventListener("click", () => {
-                    deleteTask(taskObj.id);
+
+                let isEditing = false;
+
+                editBtn.addEventListener('click', () => {
+
+                    editErrorSpan.style.display = 'none';
+
+                    if (!isEditing) {
+                        buttonsDiv.style.flexDirection = 'column';
+                        buttonsDiv.style.alignItems = 'center';
+                        buttonsDiv.style.gap = '4px';
+
+                        textSpan.style.display = 'none';
+                        editInput.style.display = 'block';
+                        editDateInput.style.display = 'block';
+
+                        editInput.value = textSpan.textContent;
+                        editBtn.classList = 'save-btn';
+                        delBtn.textContent = 'Cancel';
+                        isEditing = true;
+                    }
+                    else {
+                        const newTitle = editInput.value;
+                        const newDueDate = new Date(editDateInput.value.trim());
+                        if (newTitle) {
+                            if (newDueDate && !isNaN(newDueDate.getTime())) {
+                                const today = new Date();
+                                today.setHours(0, 0, 0, 0);
+                                if (newDueDate.getTime() > today) {
+
+                                    editBtn.classList = 'edit-btn';
+                                    updateTask(taskObj.id, newTitle, newDueDate);
+                                }
+                                else {
+                                    editErrorSpan.style.display = 'block';
+                                    editDateInput.focus();
+                                    editErrorSpan.textContent = 'Invalid due date!';
+                                }
+                            }
+                            else {
+                                editErrorSpan.style.display = 'block';
+                                editDateInput.focus();
+                                editErrorSpan.textContent = 'Due date cannot be empty or NaN!';
+                            }
+                        }
+                        else {
+                            editErrorSpan.style.display = 'block';
+                            editInput.focus();
+                            editErrorSpan.textContent = 'Task title cannot be empty!';
+                        }
+                        
+                    }
+
+
+
                 });
 
+                delBtn.addEventListener("click", () => {
+                    
+                    if (!isEditing) {
+                        deleteTask(taskObj.id);
+                    }
+                    else {
+                        editBtn.className = 'edit-btn';
+                        buttonsDiv.style.flexDirection = 'row';
+                        buttonsDiv.style.alignItems = 'center';
+                        buttonsDiv.style.gap = '4px';
+
+                        textSpan.style.display = 'block';
+                        editInput.style.display = 'none';
+                        editDateInput.style.display = 'none';
+                        editErrorSpan.style.display = 'none';
+                        editInput.value = textSpan.textContent;
+                        delBtn.textContent = 'Delete';
+                        isEditing = false;
+                    }
+                });
+
+                buttonsDiv.appendChild(inputsDiv);
                 buttonsDiv.appendChild(editBtn);
                 buttonsDiv.appendChild(delBtn);
+                buttonsDiv.appendChild(editErrorSpan);
 
                 task.appendChild(textSpan);
                 task.appendChild(buttonsDiv);
@@ -146,6 +234,31 @@ async function renderTasks() {
     }
 }
 
+async function updateTask(taskId, newTitle, newDueDate) {
+    try {
+        const updatedTask = {
+            title: newTitle,
+            dueDate: newDueDate
+        };
+
+        const response = await fetch(`${apiBaseAddress}/tasks/${taskId}`, {
+            method: 'PUT',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedTask)
+        });
+
+        if (!response.ok) {
+            throw new Error("Response was not OK!");
+        }
+
+        await renderTasks();
+    }
+    catch (err) {
+        console.log(err);
+    }
+    
+}
+
 async function deleteTask(taskId) {
     try {
         const response = await fetch(`${apiBaseAddress}/tasks/${taskId}`, {
@@ -160,6 +273,8 @@ async function deleteTask(taskId) {
         error.textContent = err;
     }
 }
+
+
 
 
 
