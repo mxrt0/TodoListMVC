@@ -143,6 +143,7 @@ async function renderTasks() {
                 markIcon.alt = 'Mark';
                 markIcon.className = 'btn-icon';
                 markCompleteBtn.appendChild(markIcon);
+                
 
                 const delBtn = document.createElement("button");
                 delBtn.classList.add("delete-btn");
@@ -228,6 +229,10 @@ async function renderTasks() {
 
                 delBtn.addEventListener("click", () => {
                     markCompleteBtn.style.display = 'none';
+
+                    if (taskObj.isCompleted) {
+                        deleteTask(taskObj.id);
+                    }
                     if (delBtn.textContent === "Cancel") {
                         resetTaskUI(); 
                         return;
@@ -264,6 +269,28 @@ async function renderTasks() {
 
                 task.appendChild(textSpan);
                 task.appendChild(buttonsDiv);
+
+                if (taskObj.isCompleted) {
+                    markCompleteBtn.innerHTML = 'Completed <img class="btn-icon btn-icon-large" src="img/completed.png">';
+                    markCompleteBtn.disabled = true;
+
+                    task.classList.add('done');
+                    
+                    editBtn.style.display = 'none';
+                }
+                else {
+                    markCompleteBtn.addEventListener('click', () => {
+                        markCompleteBtn.innerHTML = 'Completed <img class="btn-icon btn-icon-large" src="img/completed.png">';
+                        markCompleteBtn.disabled = true;
+
+                        task.classList.add('done', 'animate');
+                        task.addEventListener('animationend', () => {
+                            task.classList.remove('animate');
+                        });
+                        completeTask(taskObj.id);
+                        editBtn.style.display = 'none';
+                    })
+                };
 
                 tasksList.appendChild(task);
 
@@ -303,6 +330,22 @@ async function renderTasks() {
     }
     catch (err) {
         error.textContent = err;
+    }
+}
+
+async function completeTask(taskId) {
+    try {
+        const response = await fetch(`${apiBaseAddress}/tasks/${taskId}/complete`, {
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error("Response was not OK!");
+        }
+        await renderTasks();
+    }
+    catch (err) {
+        console.log(err);
     }
 }
 

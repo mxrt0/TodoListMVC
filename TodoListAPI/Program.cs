@@ -41,6 +41,15 @@ namespace TodoListAPI
                 return Results.Created($"/tasks/{task.Id}", task);
             });
 
+            app.MapPost("/tasks/{id}/complete", async (int id, ToDoListDbContext db) =>
+            {
+                var taskToComplete = db.ToDoList.Find(id);
+                taskToComplete!.IsCompleted = true;
+
+                await db.SaveChangesAsync();
+                return Results.NoContent();
+            });
+
             app.MapGet("/tasks", async (ToDoListDbContext db) =>
             {
                 return Results.Json(await db.ToDoList.ToListAsync());
