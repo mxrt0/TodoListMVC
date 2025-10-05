@@ -126,19 +126,38 @@ async function renderTasks() {
 
 
                 const editBtn = document.createElement("button");
-                editBtn.classList = "edit-btn";
+                editBtn.className = "edit-btn";
                 editBtn.textContent = "Edit";
-                
+                const editIcon = document.createElement('img');
+                editIcon.src = 'img/edit.png';
+                editIcon.alt = 'Edit';
+                editIcon.className = 'btn-icon';
+                editIcon.style.marginBottom = '3px';
+                editBtn.appendChild(editIcon);
+
+                const markCompleteBtn = document.createElement("button");
+                markCompleteBtn.className = 'save-btn';
+                markCompleteBtn.textContent = "Mark As Completed";
+                const markIcon = document.createElement('img');
+                markIcon.src = 'img/mark.png';
+                markIcon.alt = 'Mark';
+                markIcon.className = 'btn-icon';
+                markCompleteBtn.appendChild(markIcon);
 
                 const delBtn = document.createElement("button");
                 delBtn.classList.add("delete-btn");
                 delBtn.textContent = "Delete";
+                const delIcon = document.createElement('img');
+                delIcon.src = 'img/bin.png';
+                delIcon.alt = 'Del';
+                delIcon.className = 'btn-icon';
+                delBtn.appendChild(delIcon);
 
                 let isEditing = false;
                 let isDeleting = false;
 
                 editBtn.addEventListener('click', () => {
-
+                    markCompleteBtn.style.display = 'none';
                     editErrorSpan.style.display = 'none';
 
                     if (isDeleting && !isEditing) {
@@ -161,8 +180,16 @@ async function renderTasks() {
 
                         editInput.value = textSpan.textContent;
                         editBtn.className = 'save-btn';
+                        editBtn.textContent = 'Save'; 
                         delBtn.textContent = 'Cancel';
+                        if (delBtn.contains(delIcon)) {
+                            delBtn.removeChild(delIcon);
+                        }
+                        if (editBtn.contains(delIcon)) {
+                            editBtn.removeChild(editIcon);
+                        } 
                         isEditing = true;
+  
                     }
                     else if (isEditing && !isDeleting) {
                         const newTitle = editInput.value;
@@ -172,9 +199,11 @@ async function renderTasks() {
                                 const today = new Date();
                                 today.setHours(0, 0, 0, 0);
                                 if (newDueDate.getTime() > today) {
+                                    textSpan.textContent = editInput.value;
 
-                                    resetTaskUI();
+                                    taskObj.title = editInput.value;
                                     updateTask(taskObj.id, newTitle, newDueDate);
+                                    resetTaskUI();    
                                 }
                                 else {
                                     editErrorSpan.style.display = 'block';
@@ -198,9 +227,10 @@ async function renderTasks() {
                 });
 
                 delBtn.addEventListener("click", () => {
-
-                    if (isEditing || isDeleting) {
-                        resetTaskUI();  
+                    markCompleteBtn.style.display = 'none';
+                    if (delBtn.textContent === "Cancel") {
+                        resetTaskUI(); 
+                        return;
                     }
                     else if (!isDeleting && !isEditing) {
                         buttonsDiv.style.flexDirection = 'column';
@@ -228,7 +258,8 @@ async function renderTasks() {
 
                 buttonsDiv.appendChild(inputsDiv);
                 buttonsDiv.appendChild(editBtn);
-                buttonsDiv.appendChild(delBtn);
+                buttonsDiv.appendChild(markCompleteBtn);
+                buttonsDiv.appendChild(delBtn);             
                 buttonsDiv.appendChild(editErrorSpan);
 
                 task.appendChild(textSpan);
@@ -239,9 +270,13 @@ async function renderTasks() {
                 function resetTaskUI() {
                     editBtn.className = 'edit-btn';
                     editBtn.textContent = 'Edit';
+                    if (!editBtn.contains(editIcon)) editBtn.appendChild(editIcon);
+
                     buttonsDiv.style.flexDirection = 'row';
                     buttonsDiv.style.alignItems = 'center';
                     buttonsDiv.style.gap = '4px';
+
+                    markCompleteBtn.style.display = 'block';
 
                     textSpan.style.display = 'block';
                     textSpan.textContent = taskObj.title;
@@ -253,6 +288,7 @@ async function renderTasks() {
                     editErrorSpan.style.display = 'none';
 
                     delBtn.textContent = 'Delete';
+                    if (!delBtn.contains(delIcon)) delBtn.appendChild(delIcon);
                     isEditing = false;
                     isDeleting = false;  
                 }

@@ -57,7 +57,7 @@ body {
     display: block;
     margin: 0.5rem auto;
     background: linear-gradient(145deg, #28a745, #20c15c);
-    color: #fff;
+    color: #f0f0f0;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 4px;
@@ -79,22 +79,22 @@ body {
     margin: 0 auto;
 }
 
-#tasks li {
-    background: white;
-    padding: 1rem 1.5rem;
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    font-size: 1.3rem;
-    min-width: 250px;
-    max-width: 350px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-}
+    #tasks li {
+        background: linear-gradient(135deg, #bcf3f0, #f0f8ff);
+        padding: 1rem 1.5rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        font-size: 1.3rem;
+        min-width: 250px;
+        max-width: 450px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
 
 
 
@@ -150,6 +150,7 @@ body {
 }
 
 .task-buttons {
+    
     display: flex;
     flex-shrink: 0;
     width: 100%;
@@ -177,7 +178,7 @@ body {
     padding: 8px 10px;
     font-size: 1rem;
     border-radius: 6px;
-    color: #fff;
+    color: #f0f0f0;
     font-weight: 600;
     box-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
@@ -236,4 +237,10 @@ input, button {
     margin: 20px 0;
 }
 
+.btn-icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
 
