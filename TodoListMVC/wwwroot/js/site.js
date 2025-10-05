@@ -230,8 +230,9 @@ async function renderTasks() {
                 delBtn.addEventListener("click", () => {
                     markCompleteBtn.style.display = 'none';
 
-                    if (taskObj.isCompleted) {
+                    if (Boolean(taskObj.isCompleted)) {
                         deleteTask(taskObj.id);
+                        return;
                     }
                     if (delBtn.textContent === "Cancel") {
                         resetTaskUI(); 
@@ -280,15 +281,15 @@ async function renderTasks() {
                 }
                 else {
                     markCompleteBtn.addEventListener('click', () => {
+                        editBtn.style.display = 'none';
                         markCompleteBtn.innerHTML = 'Completed <img class="btn-icon btn-icon-large" src="img/completed.png">';
                         markCompleteBtn.disabled = true;
 
                         task.classList.add('done', 'animate');
                         task.addEventListener('animationend', () => {
                             task.classList.remove('animate');
-                        });
-                        completeTask(taskObj.id);
-                        editBtn.style.display = 'none';
+                            completeTask(taskObj.id);
+                        });    
                     })
                 };
 
