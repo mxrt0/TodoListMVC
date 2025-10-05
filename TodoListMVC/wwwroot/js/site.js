@@ -135,26 +135,36 @@ async function renderTasks() {
                 delBtn.textContent = "Delete";
 
                 let isEditing = false;
+                let isDeleting = false;
 
                 editBtn.addEventListener('click', () => {
 
                     editErrorSpan.style.display = 'none';
 
-                    if (!isEditing) {
+                    if (isDeleting && !isEditing) {
+                       isDeleting = false;
+                       deleteTask(taskObj.id);
+                    }
+                    else if (!isEditing && !isDeleting) {
+                        
                         buttonsDiv.style.flexDirection = 'column';
                         buttonsDiv.style.alignItems = 'center';
                         buttonsDiv.style.gap = '4px';
 
                         textSpan.style.display = 'none';
                         editInput.style.display = 'block';
+
                         editDateInput.style.display = 'block';
+                        editDateInput.value = new Date(taskObj.dueDate.trim()).toISOString().split('T')[0];
+                        editInput.disabled = false;
+                        editDateInput.disabled = false;
 
                         editInput.value = textSpan.textContent;
-                        editBtn.classList = 'save-btn';
+                        editBtn.className = 'save-btn';
                         delBtn.textContent = 'Cancel';
                         isEditing = true;
                     }
-                    else {
+                    else if (isEditing && !isDeleting) {
                         const newTitle = editInput.value;
                         const newDueDate = new Date(editDateInput.value.trim());
                         if (newTitle) {
@@ -163,7 +173,7 @@ async function renderTasks() {
                                 today.setHours(0, 0, 0, 0);
                                 if (newDueDate.getTime() > today) {
 
-                                    editBtn.classList = 'edit-btn';
+                                    resetTaskUI();
                                     updateTask(taskObj.id, newTitle, newDueDate);
                                 }
                                 else {
@@ -185,30 +195,35 @@ async function renderTasks() {
                         }
                         
                     }
-
-
-
                 });
 
                 delBtn.addEventListener("click", () => {
-                    
-                    if (!isEditing) {
-                        deleteTask(taskObj.id);
+
+                    if (isEditing || isDeleting) {
+                        resetTaskUI();  
                     }
-                    else {
-                        editBtn.className = 'edit-btn';
-                        buttonsDiv.style.flexDirection = 'row';
+                    else if (!isDeleting && !isEditing) {
+                        buttonsDiv.style.flexDirection = 'column';
                         buttonsDiv.style.alignItems = 'center';
                         buttonsDiv.style.gap = '4px';
 
                         textSpan.style.display = 'block';
-                        editInput.style.display = 'none';
-                        editDateInput.style.display = 'none';
-                        editErrorSpan.style.display = 'none';
-                        editInput.value = textSpan.textContent;
-                        delBtn.textContent = 'Delete';
-                        isEditing = false;
+                        textSpan.textContent = 'Are you sure you want to delete this task?';
+
+                        editInput.style.display = 'block';
+                        editDateInput.style.display = 'block';
+                        editInput.value = taskObj.title;
+                        editInput.disabled = true;
+
+                        editDateInput.value = new Date(taskObj.dueDate.trim()).toISOString().split('T')[0];
+                        editDateInput.disabled = true;
+
+                        editBtn.className = 'save-btn';
+                        editBtn.textContent = 'Confirm';
+                        delBtn.textContent = 'Cancel';
+                        isDeleting = true;           
                     }
+
                 });
 
                 buttonsDiv.appendChild(inputsDiv);
@@ -220,6 +235,27 @@ async function renderTasks() {
                 task.appendChild(buttonsDiv);
 
                 tasksList.appendChild(task);
+
+                function resetTaskUI() {
+                    editBtn.className = 'edit-btn';
+                    editBtn.textContent = 'Edit';
+                    buttonsDiv.style.flexDirection = 'row';
+                    buttonsDiv.style.alignItems = 'center';
+                    buttonsDiv.style.gap = '4px';
+
+                    textSpan.style.display = 'block';
+                    textSpan.textContent = taskObj.title;
+                    editInput.style.display = 'none';
+                    editInput.disabled = false;
+
+                    editDateInput.style.display = 'none';
+                    editDateInput.disabled = false;
+                    editErrorSpan.style.display = 'none';
+
+                    delBtn.textContent = 'Delete';
+                    isEditing = false;
+                    isDeleting = false;  
+                }
             });
         }
         else {
