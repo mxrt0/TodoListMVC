@@ -2,7 +2,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 3px;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
     font-family: Verdana, Arial, sans-serif;
@@ -77,6 +77,12 @@ body {
     list-style: none;
     padding: 0;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 400px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
 }
 
     #tasks li {
@@ -200,6 +206,14 @@ body {
     text-align: center;
 }
 
+.success-span {
+    margin-top: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    color: green;
+}
+
 label[for="date-input"] {
     color: #333;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
@@ -288,6 +302,69 @@ button:disabled {
     opacity: 0.9;
     cursor: not-allowed;
     pointer-events: none;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    width: 250px;
+    background-color: #235e5e;
+    border-radius: 25px;
+    padding: 6px 12px;
+    margin: 3px 0 8px 0;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+    .search-container:hover {
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        transform: translateY(-1px);
+    }
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: none;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: none;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: #fff;
+    
+    transition: background 0.2s;
+}
+
+.search-input:focus {
+        background-color: rgba(255,255,255,0.3);
+}
+
+    .search-input::placeholder {
+        color: rgba(255,255,255,1);
+    }
+
+
+.search-btn {
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background: none;
+    box-shadow: none;
+    cursor: default;
+    font-size: 18px;
+    color: #fff;
+    margin-left: 25px;
+    padding: 0;
+    line-height: 1;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.search-btn:hover {
+        color: #ffd700;
+        transform: scale(1.1);
 }
 
 

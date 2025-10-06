@@ -11,6 +11,53 @@ const error = document.getElementById('error-message');
 
 renderTasks();
 
+const searchDiv = document.getElementById('search-container');
+
+const searchInput = searchDiv.querySelector('input');
+
+let debounceTimeout;
+searchInput.addEventListener('input', () => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+        filterTasks(searchInput.value);
+    }, 150);
+});
+
+function filterTasks(searchParam) {
+    searchParam = searchParam.trim().toLowerCase();
+    const matches = [];
+    const nonMatches = [];
+    let firstMatch = null;
+    tasksList.querySelectorAll('li').forEach(task => {
+        const span = task.querySelector('span');
+        if (!span) return;
+
+        const text = span.textContent.toLowerCase();
+
+        if (!searchParam) {
+            task.style.visibility = 'visible';
+            tasksList.appendChild(task);
+            if (!firstMatch && searchParam) firstMatch = task;
+        }
+        else if (text.includes(searchParam)) {
+            task.style.visibility = 'visible';
+            matches.push(task);
+        }
+        else {
+            task.style.visibility = 'hidden';
+            nonMatches.push(task);
+        }
+    });
+        if (searchParam) {
+            matches.forEach(task => tasksList.appendChild(task));
+        }
+
+        if (matches.length > 0) {
+            matches[0].scrollIntoView({ behavior: 'auto', block: 'start' });
+        }
+  
+}
+
 addBtn.addEventListener('click', () => {
 
     error.style.display = 'none';
@@ -27,6 +74,8 @@ addBtn.addEventListener('click', () => {
             if (dueDate.getTime() > today) {
 
                 addTask(taskText, dueDate); 
+                taskInput.value = "";
+                dueDateInput = "";
 
             }
             else {
@@ -88,14 +137,18 @@ async function renderTasks() {
         tasksList.innerHTML = "";
 
         if (allTasks.length > 0) {
-            tasksHeader.style.display = "block";
-
+            tasksHeader.style.display = 'block';
+            searchDiv.style.display = 'block';
+            
             allTasks.forEach(taskObj => {
+
                 const task = document.createElement("li");
 
                 const textSpan = document.createElement("span");
                 textSpan.className = "task-text";
                 textSpan.textContent = taskObj.title;
+
+                
 
                 const buttonsDiv = document.createElement("div");
                 buttonsDiv.className = "task-buttons";
@@ -124,6 +177,9 @@ async function renderTasks() {
                 editErrorSpan.style.display = 'none';
                 editErrorSpan.className = 'error-span';
 
+                const editSuccessSpan = document.createElement("span");
+                editSuccessSpan.style.display = 'none';
+                editSuccessSpan.className = 'success-span';
 
                 const editBtn = document.createElement("button");
                 editBtn.className = "edit-btn";
@@ -161,9 +217,10 @@ async function renderTasks() {
                     markCompleteBtn.style.display = 'none';
                     editErrorSpan.style.display = 'none';
 
-                    if (isDeleting && !isEditing) {
-                       isDeleting = false;
-                       deleteTask(taskObj.id);
+                    if (editBtn.textContent === "Confirm") {
+                        isDeleting = false;  
+                        deleteTask(taskObj.id, editInput.value, new Date(editDateInput.value.trim()));
+                        resetTaskUI();
                     }
                     else if (!isEditing && !isDeleting) {
                         
@@ -173,7 +230,7 @@ async function renderTasks() {
 
                         textSpan.style.display = 'none';
                         editInput.style.display = 'block';
-
+           
                         editDateInput.style.display = 'block';
                         editDateInput.value = new Date(taskObj.dueDate.trim()).toISOString().split('T')[0];
                         editInput.disabled = false;
@@ -192,7 +249,7 @@ async function renderTasks() {
                         isEditing = true;
   
                     }
-                    else if (isEditing && !isDeleting) {
+                    else if (editBtn.textContent === "Save") {
                         const newTitle = editInput.value;
                         const newDueDate = new Date(editDateInput.value.trim());
                         if (newTitle) {
@@ -200,11 +257,15 @@ async function renderTasks() {
                                 const today = new Date();
                                 today.setHours(0, 0, 0, 0);
                                 if (newDueDate.getTime() > today) {
-                                    textSpan.textContent = editInput.value;
 
-                                    taskObj.title = editInput.value;
-                                    updateTask(taskObj.id, newTitle, newDueDate);
-                                    resetTaskUI();    
+                                    isEditing = false;
+                                    editSuccessSpan.style.display = 'block';
+                                    editSuccessSpan.textContent = 'Task updated successfully!';
+                                    setTimeout(() => {
+                                        editSuccessSpan.style.display = 'none';
+                                        updateTask(taskObj.id, newTitle, newDueDate);
+                                        resetTaskUI();
+                                    }, 1500);       
                                 }
                                 else {
                                     editErrorSpan.style.display = 'block';
@@ -235,6 +296,7 @@ async function renderTasks() {
                         return;
                     }
                     if (delBtn.textContent === "Cancel") {
+                        isDeleting = false;
                         resetTaskUI(); 
                         return;
                     }
@@ -267,8 +329,10 @@ async function renderTasks() {
                 buttonsDiv.appendChild(markCompleteBtn);
                 buttonsDiv.appendChild(delBtn);             
                 buttonsDiv.appendChild(editErrorSpan);
+                buttonsDiv.appendChild(editSuccessSpan);
 
                 task.appendChild(textSpan);
+                
                 task.appendChild(buttonsDiv);
 
                 if (taskObj.isCompleted) {
@@ -389,6 +453,7 @@ async function deleteTask(taskId) {
         error.textContent = err;
     }
 }
+
 
 
 
