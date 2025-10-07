@@ -214,9 +214,10 @@ body {
     color: green;
 }
 
-label[for="date-input"] {
+label[for="date-input"], #calendar-text {
     color: #333;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    user-select: none;
 }
 
 input, button {
@@ -234,7 +235,7 @@ input, button {
     font-size: 1.5rem;
     letter-spacing: 0.5px;
     text-shadow: 0 1px 2px rgba(0,0,0,0.15);
-    margin: 8px 0 8px;
+    margin: 8px 0 18px;
     text-align: center;
     width: 100px;
 }
@@ -367,4 +368,53 @@ button:disabled {
         transform: scale(1.1);
 }
 
+#calendar-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-top: 2px;
+    margin-bottom: 0;
+    font-family: sans-serif;
+    text-align: center;
+    margin-right: 150px;
+    width: 10%;
+    min-width: 0;
+    align-self: center;
+}
+
+.calendar-day {
+    padding: 8px;
+    background-color: #b5d6f3;
+    cursor: pointer;
+    border-radius: 4px;
+    text-align: center;
+}
+.calendar-day .empty {
+
+}
+
+    .calendar-day:hover {
+        background-color: #b2ebf2;
+    }
+
+    .calendar-day.selected {
+        background-color: #4fc3f7;
+        color: white;
+    }
+
+.reset-btn {
+    background-color: #4fc1ed;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+.reset-btn:hover {
+    transform: scale(1.05);
+    
+}
 

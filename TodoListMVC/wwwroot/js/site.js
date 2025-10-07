@@ -6,17 +6,33 @@ const addBtn = document.getElementById('add-btn');
 const taskInput = document.getElementById('new-todo-input');
 
 const tasksList = document.getElementById('tasks');
-
+const calendarContainer = document.getElementById('calendar-container');
 const dueDateInput = document.getElementById('date-input');
 const error = document.getElementById('error-message');
 
-let tasks = []
+let tasks = [];
+let selectedDate = null;
 async function init() {
     await renderTasks();
     tasks = Array.from(tasksList.querySelectorAll('li'));
+    const today = new Date();
+    generateCalendar(today.getFullYear(), today.getMonth());
 }
 
 init();
+
+const resetBtn = document.createElement('button');
+resetBtn.className = 'reset-btn';
+resetBtn.textContent = 'Show All Tasks';
+resetBtn.style.display = 'none';
+
+resetBtn.addEventListener('click', () => {
+    selectedDate = null;         
+    searchInput.value = '';      
+    renderTasks();   
+    document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+});
+calendarContainer.parentElement.insertBefore(resetBtn, calendarContainer.nextSibling);
 
 const searchDiv = document.getElementById('search-container');
 const searchInput = searchDiv.querySelector('input');
@@ -35,14 +51,21 @@ function getAllTasks() {
 
 function filterTasks(searchParam) {
     searchParam = searchParam.trim().toLowerCase();
+    let filtered = tasks;
+
+    if (selectedDate) {
+        const dateStr = selectedDate.toISOString().split('T')[0];
+        filtered = filtered.filter(task => task.dataset.due === dateStr);
+    }
+
     tasksList.innerHTML = '';
 
-    if (!searchParam) {
+    if (!searchParam && !selectedDate) {
         renderTasks();
         return;
     }
 
-    const matches = tasks.filter(task => {
+    const matches = filtered.filter(task => {
         const span = task.querySelector('span');
         return span && span.textContent.toLowerCase().includes(searchParam);
     });
@@ -60,6 +83,28 @@ function filterTasks(searchParam) {
 
     matches[0].scrollIntoView({ behavior: 'auto', block: 'start' });
  
+}
+
+function filterTasksByDate(date) {
+    const dateStr = date.toISOString().split('T')[0];
+
+    tasksList.innerHTML = '';
+
+    const matches = tasks.filter(task => {
+        const due = task.dataset.due;
+        return due === dateStr;
+    });
+
+    if (matches.length === 0) {
+        const noRes = document.createElement('li');
+        noRes.textContent = 'No tasks on this date';
+        noRes.style.opacity = '0.6';
+        noRes.style.fontStyle = 'italic';
+        tasksList.appendChild(noRes);
+        return;
+    }
+
+    matches.forEach(task => tasksList.appendChild(task));
 }
 
 addBtn.addEventListener('click', () => {
@@ -146,10 +191,15 @@ async function renderTasks() {
         if (allTasks.length > 0) {
             tasksHeader.style.display = 'block';
             searchDiv.style.display = 'block';
+            document.getElementById('calendar-text').style.display = 'block';
+            calendarContainer.style.display = 'grid';
+            resetBtn.style.display = 'block';
             
             allTasks.forEach(taskObj => {
 
                 const task = document.createElement("li");
+
+                task.setAttribute('data-due', new Date(taskObj.dueDate.trim()).toISOString().split('T')[0]);
 
                 const textSpan = document.createElement("span");
                 textSpan.className = "task-text";
@@ -403,6 +453,7 @@ async function renderTasks() {
     catch (err) {
         error.textContent = err;
     }
+    tasks = Array.from(tasksList.querySelectorAll('li'));
 }
 
 async function completeTask(taskId) {
@@ -458,6 +509,30 @@ async function deleteTask(taskId) {
         await renderTasks();
     } catch (err) {
         error.textContent = err;
+    }
+}
+
+function generateCalendar(year, month) {
+    calendarContainer.innerHTML = '';
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+ 
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.textContent = day;
+        dayDiv.classList.add('calendar-day');
+
+        dayDiv.addEventListener('click', () => {
+            selectedDate = new Date(year, month, day);
+            
+            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+            dayDiv.classList.add('selected');
+
+            filterTasks(searchInput.value);
+        });
+
+        calendarContainer.appendChild(dayDiv);
     }
 }
 
