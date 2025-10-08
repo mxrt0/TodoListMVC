@@ -1,7 +1,6 @@
 ﻿const apiBaseAddress = 'https://localhost:7090';
 let allTasks = [];
 const tasksHeader = document.getElementById('tasks-header');
-
 const addBtn = document.getElementById('add-btn');
 const taskInput = document.getElementById('new-todo-input');
 
@@ -180,7 +179,9 @@ async function renderTasks() {
     try {
 
         const response = await fetch(`${apiBaseAddress}/tasks`);
-        if (!response.ok) throw new Error("Response was not OK!");
+        if (!response.ok) {
+            throw new Error("Response was not OK!");
+        } 
         const data = await response.json();
 
         allTasks = data.filter(item => !item.isDeleted);
