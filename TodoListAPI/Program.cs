@@ -52,54 +52,95 @@ namespace TodoListAPI
 
             app.UseHttpsRedirection();
 
-            // Endpoints
+
+            app.MapGet("/status", () =>
+            {
+                return Results.Ok();
+            });
+
             app.MapPost("/tasks/add", async (ToDoItem task, ToDoListDbContext db, DbCache cache) =>
             {
-                cache.ClearCache();
-                db.ToDoList.Add(task);
-                await db.SaveChangesAsync();
+                try
+                {
+                    cache.ClearCache();
+                    db.ToDoList.Add(task);
+                    await db.SaveChangesAsync();
 
-                return Results.Created($"/tasks/{task.Id}", task);
+                    return Results.Created($"/tasks/{task.Id}", task);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Json(new { error = ex.Message });
+                }
+
             });
 
             app.MapPost("/tasks/{id}/complete", async (int id, ToDoListDbContext db, DbCache cache) =>
             {
-                cache.ClearCache();
+                try
+                {
+                    cache.ClearCache();
 
-                var taskToComplete = db.ToDoList.Find(id);
-                taskToComplete!.IsCompleted = true;
+                    var taskToComplete = db.ToDoList.Find(id);
+                    taskToComplete!.IsCompleted = true;
 
-                await db.SaveChangesAsync();
-                return Results.NoContent();
+                    await db.SaveChangesAsync();
+                    return Results.NoContent();
+                }
+                catch (Exception ex)
+                {
+                    return Results.Json(new { error = ex.Message });
+                }
             });
 
             app.MapGet("/tasks", (DbCache cache) =>
             {
-                return Results.Json(cache.GetTasks());
+                try
+                {
+                    return Results.Json(cache.GetTasks());
+                }
+                catch (Exception ex)
+                {
+                    return Results.Json(new { error = ex.Message });
+                }
             });
 
             app.MapDelete("/tasks/{id}", async (int id, ToDoListDbContext db, DbCache cache) =>
             {
-                cache.ClearCache();
+                try
+                {
+                    cache.ClearCache();
 
-                var taskToDelete = db.ToDoList.Find(id);
+                    var taskToDelete = db.ToDoList.Find(id);
 
-                taskToDelete!.IsDeleted = true;
-                await db.SaveChangesAsync();
+                    taskToDelete!.IsDeleted = true;
+                    await db.SaveChangesAsync();
 
-                return Results.NoContent();
+                    return Results.NoContent();
+                }
+                catch (Exception ex)
+                {
+                    return Results.Json(new { error = ex.Message });
+                }
             });
 
             app.MapPut("/tasks/{id}", async (int id, UpdateToDoItemDto dto, ToDoListDbContext db, DbCache cache) =>
             {
-                cache.ClearCache();
+                try
+                {
+                    cache.ClearCache();
 
-                var taskToUpdate = db.ToDoList.Find(id);
+                    var taskToUpdate = db.ToDoList.Find(id);
 
-                taskToUpdate!.MapFromDto(dto);
-                await db.SaveChangesAsync();
+                    taskToUpdate!.MapFromDto(dto);
+                    await db.SaveChangesAsync();
 
-                return Results.NoContent();
+                    return Results.NoContent();
+                }
+                catch (Exception ex)
+                {
+                    return Results.Json(new { error = ex.Message });
+                }
             });
 
             app.Run();

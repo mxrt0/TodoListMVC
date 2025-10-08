@@ -376,7 +376,8 @@ button:disabled {
     margin-bottom: 0;
     font-family: sans-serif;
     text-align: center;
-    margin-right: 90px;
+    min-height: 180px;
+    margin: 0 auto;
     width: 10%;
     min-width: 0;
     align-self: center;

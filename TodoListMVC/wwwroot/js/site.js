@@ -12,6 +12,21 @@ const error = document.getElementById('error-message');
 let tasks = [];
 let selectedDate = null;
 async function init() {
+    let ready = false;
+    while (!ready) {
+        try {
+            const test = await fetch(`${apiBaseAddress}/status`);
+            if (test.ok) {
+                ready = true;
+            } else {
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+        }
+        catch (err) {
+            await new Promise(resolve => setTimeout(resolve, 300));
+        }
+    }
+
     await renderTasks();
     tasks = Array.from(tasksList.querySelectorAll('li'));
     const today = new Date();
@@ -177,7 +192,7 @@ async function addTask(taskTitle, taskDueDate) {
 
 async function renderTasks() {
     try {
-
+        
         const response = await fetch(`${apiBaseAddress}/tasks`);
         if (!response.ok) {
             throw new Error("Response was not OK!");
