@@ -550,6 +550,7 @@ function generateCalendar(year, month) {
 
         calendarContainer.appendChild(dayDiv);
     }
+    calendarContainer.style.marginRight = '85px';
 }
 
 
